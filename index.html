@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description"
+        content="I Dream My Painting: Connecting MLLMs and Diffusion Models via Prompt Generation for Text-Guided Multi-Mask Inpainting.">
+    <meta name="keywords" content="I Dream My Painting, Diffusion, MLLM, IDMP">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>I Dream My Painting</title>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-PYVRSFMDRL');
+    </script>
+
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+    <link rel="icon" href="./static/images/favicon.svg">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+    <style>
+        .carousel {
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div class="navbar-menu">
+            <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+                <a class="navbar-item" href="https://nicolafan.github.io">
+                    <span class="icon">
+                        <i class="fas fa-home"></i>
+                    </span>
+                </a>
+
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        More Research
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="https://sites.google.com/site/cilabuniba/home">
+                            CILab's Website
+                        </a>
+                        <a class="navbar-item" href="https://github.com/cilabuniba">
+                            CILab's GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+
+    <section class="hero">
+        <div class="hero-body">
+            <div class="container is-max-desktop">
+                <div class="columns is-centered">
+                    <div class="column has-text-centered">
+                        <h1 class="title is-3 publication-title">I Dream My Painting: Connecting MLLMs and Diffusion
+                            Models via Prompt Generation for Text-Guided Multi-Mask Inpainting</h1>
+                        <h2 class="title is-5 publication-title">WACV 2025</h2>
+                        <div class="is-size-5 publication-authors">
+                            <span class="author-block">
+                                <a href="https://nicolafan.github.io">Nicola Fanelli</a><sup>1</sup>,</span>
+                            <span class="author-block">
+                                <a href="https://gennarovessio.com">Gennaro Vessio</a><sup>1</sup>,</span>
+                            <span class="author-block">
+                                <a href="https://sites.google.com/site/cilabuniba/people/giovanna-castellano">Giovanna
+                                    Castellano</a><sup>1</sup>
+                            </span>
+                        </div>
+
+                        <div class="is-size-5 publication-authors">
+                            <span class="author-block"><sup>1</sup>University of Bari Aldo Moro</span>
+                        </div>
+
+                        <div class="is-size-6 publication-authors">
+                            <span class="author-block">Correspondence to: <span
+                                    class='rev'>nicola.fanelli@uniba.it</span></span>
+                        </div>
+
+                        <div class="column has-text-centered">
+                            <div class="publication-links">
+                                <!-- PDF Link. -->
+                                <span class="link-block">
+                                    <a href="https://arxiv.org/pdf/2411.19050"
+                                        class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </span>
+                                        <span>Paper</span>
+                                    </a>
+                                </span>
+                                <span class="link-block">
+                                    <a href="https://arxiv.org/abs/2411.19050"
+                                        class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="ai ai-arxiv"></i>
+                                        </span>
+                                        <span>arXiv</span>
+                                    </a>
+                                </span>
+                                <!-- Video Link. -->
+                                <!-- <span class="link-block">
+                                    <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
+                                        class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="fab fa-youtube"></i>
+                                        </span>
+                                        <span>Video</span>
+                                    </a>
+                                </span> -->
+                                <!-- Code Link. -->
+                                <span class="link-block">
+                                    <a href="https://github.com/cilabuniba/i-dream-my-painting"
+                                        class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="fab fa-github"></i>
+                                        </span>
+                                        <span>Code</span>
+                                    </a>
+                                </span>
+                                <!-- Bibtex. -->
+                                <span class="link-block">
+                                    <a href="https://colab.research.google.com/github/cilabuniba/i-dream-my-painting/blob/main/i_dream_my_painting_demo.ipynb" class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="fas fa-laptop"></i>
+                                        </span>
+                                        <span>Colab Demo</span>
+                                    </a>
+                                </span>
+                                <!-- Dataset Link. -->
+                                <span class="link-block">
+                                    <a href="https://zenodo.org/records/8172374"
+                                        class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="far fa-folder"></i>
+                                        </span>
+                                        <span>ArtGraph</span>
+                                    </a>
+                                </span>
+                                <!-- Bibtex. -->
+                                <span class="link-block">
+                                    <a href="#BibTeX" class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="fas fa-book"></i>
+                                        </span>
+                                        <span>BibTex</span>
+                                    </a>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TEASER + INTRO -->
+    <section class="hero teaser" style="margin-top: -30px;">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered has-text-centered">
+                <!-- First column in its own row -->
+                <div class="column is-three-fifths">
+                    <h3 class="subtitle has-text-centered">
+                        <b>tl;dr:</b> We inpaint multiple image regions, each with a different text prompt, and generate
+                        multi-mask prompt suggestions.
+                    </h3>
+                </div>
+            </div>
+            <!-- Second column in a separate row -->
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                    <div class="is-centered is-max-desktop teaser">
+                        <div>
+                            <video class="center-video" autoplay muted loop playsinline
+                                style="margin: 1em auto 0 auto;">
+                                <source src="./static/videos/task.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <!-- Abstract. -->
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                    <h2 class="title is-3">Abstract</h2>
+                    <div class="content has-text-justified">
+                        <p>
+                            Inpainting focuses on filling missing or corrupted regions of an image to blend seamlessly
+                            with its surrounding content and style. While conditional diffusion models have proven
+                            effective for text-guided inpainting, we introduce the novel task of <b>multi-mask
+                                inpainting</b>,
+                            where multiple regions are simultaneously inpainted using distinct prompts. Furthermore, we
+                            design a fine-tuning procedure for multimodal LLMs, such as LLaVA, to <b>generate multi-mask
+                                prompts</b> automatically using corrupted images as inputs. These models can generate
+                            helpful
+                            and detailed prompt suggestions for filling the masked regions. The generated prompts are
+                            then fed to Stable Diffusion, which is fine-tuned for the multi-mask inpainting problem
+                            using <b>rectified cross-attention</b>, enforcing prompts onto their designated regions for
+                            filling. Experiments on digitized paintings from WikiArt and the Densely Captioned Images
+                            dataset demonstrate that our pipeline delivers creative and accurate inpainting results.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!--/ Abstract. -->
+        </div>
+    </section>
+
+    <section class="hero is-light is-small">
+        <div class="container is-max-desktop">
+            <div class="hero-body">
+                <h2 class="title is-3 has-text-centered">Method</h2>
+                <div class="columns is-centered has-text-centered">
+                    <div class="column">
+                        <div class="publication-img">
+                            <img id="Method" width="100%" src="static/images/figs/pipe.svg" />
+                        </div>
+                    </div>
+                </div>
+                <div class="content has-text-justified">
+                    <p>
+                        We propose a pipeline for text-guided multi-mask inpainting, comprising two key stages: prompt
+                        generation and inpainting. During the prompt generation stage, we fine-tune LLaVA with QLoRA to
+                        automatically generate multi-mask prompts. In the inpainting stage, Stable Diffusion is
+                        fine-tuned for multi-mask inpainting using an adaptation of the rectified cross-attention (RCA)
+                        algorithm, where LoRA adapters target all cross-attention layers. The rectified cross-attention
+                        module ensures that prompts are accurately applied to their designated regions for inpainting.
+                        The pipeline undergoes a
+                        two-stage training process and is evaluated on an automatically annotated dataset of art images
+                        as well as the Densely Captioned Images dataset.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h2 class="title is-3 has-text-centered">Gallery</h2>
+            <div class="carousel" data-autoplay="true" data-loop="true" data-slides-to-show="1"
+                data-autoplay-speed="20000">
+                <div class="carousel-item">
+                    <figure class="image">
+                        <img src="./static/images/figs/qual_final.svg" alt="Example 0">
+                    </figure>
+                    <p class="has-text-centered mt-2 mb-5">Qualitative examples.</p>
+                </div>
+                <div class="carousel-item">
+                    <figure class="image">
+                        <img src="./static/images/suppl_figs/qual_suppl1.svg" alt="Example 1">
+                    </figure>
+                    <p class="has-text-centered mt-2 mb-5">Qualitative examples from the <a
+                            href="https://github.com/facebookresearch/DCI">Densely Captioned Images</a> dataset.</p>
+                </div>
+                <div class="carousel-item">
+                    <figure class="image">
+                        <img src="./static/images/suppl_figs/qual_suppl2.svg" alt="Example 2">
+                    </figure>
+                    <p class="has-text-centered mt-2 mb-5">Qualitative examples for 1-mask inpainting.</p>
+                </div>
+                <div class="carousel-item">
+                    <figure class="image">
+                        <img src="./static/images/suppl_figs/qual_suppl3.svg" alt="Example 3">
+                    </figure>
+                    <p class="has-text-centered mt-2 mb-5">Qualitative examples for 2-mask inpainting.</p>
+                </div>
+                <div class="carousel-item">
+                    <figure class="image">
+                        <img src="./static/images/suppl_figs/qual_suppl4.svg" alt="Example 4">
+                    </figure>
+                    <p class="has-text-centered mt-2 mb-5">Qualitative examples for 3-mask inpainting.</p>
+                </div>
+                <div class="carousel-item">
+                    <figure class="image">
+                        <img src="./static/images/suppl_figs/qual_suppl5.svg" alt="Example 5">
+                    </figure>
+                    <p class="has-text-centered mt-2 mb-5">Qualitative examples for 4-mask inpainting.</p>
+                </div>
+                <div class="carousel-item">
+                    <figure class="image">
+                        <img src="./static/images/suppl_figs/qual_suppl6.svg" alt="Example 6">
+                    </figure>
+                    <p class="has-text-centered mt-2 mb-5">Qualitative examples for 5-mask inpainting.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <!-- Concurrent Work. -->
+            <div class="columns is-centered">
+                <div class="column is-full-width">
+                    <h2 class="title is-3">Related Links</h2>
+
+                    <div class="content has-text-justified">
+                        <p>
+                            The following is a non-comprehensive list of related works:
+                        </p>
+                        <p>
+                            <a href="https://arxiv.org/abs/2310.16047">Cohen et al.</a> enhance inpainting diversity by
+                            sampling
+                            rare yet plausible concepts from the posterior distribution
+                            of generated objects.
+                        </p>
+                        <p>
+                            Similar to our approach, <a
+                                href="https://openaccess.thecvf.com/content/CVPR2024/html/Chiu_Brush2Prompt_Contextual_Prompt_Generator_for_Object_Inpainting_CVPR_2024_paper.html">Brush2Prompt</a>
+                            introduces the task of prompt
+                            generation for text-guided inpainting but focuses on single-mask inpainting.
+                        </p>
+                        <p>
+                            <a href="https://essunny310.github.io/FreestyleNet/">FreestyleNet</a> introduces the
+                            rectified cross-attention mechanism for freestyle layout-to-image synthesis,
+                            which inspired our rectified cross-attention module for multi-mask inpainting.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+            <!--/ Concurrent Work. -->
+
+        </div>
+    </section>
+
+
+    <section class="section" id="BibTeX">
+        <div class="container is-max-desktop content">
+            <h2 class="title">BibTeX</h2>
+            <pre><code>@inproceedings{fanelli2025idream,
+  title     = {I Dream My Painting: Connecting MLLMs and Diffusion Models via Prompt Generation for Text-Guided Multi-Mask Inpainting},
+  author    = {Nicola, Fanelli and Gennaro, Vessio and Giovanna, Castellano},
+  year      = {2025},
+  booktitle   = {Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision}
+}</code></pre>
+        </div>
+    </section>
+
+
+    <footer class="footer">
+        <div class="container">
+            <div class="content has-text-centered">
+                <a class="icon-link" href="https://arxiv.org/pdf/2411.19050">
+                    <i class="fas fa-file-pdf"></i>
+                </a>
+                <a class="icon-link" href="https://github.com/nicolafan" class="external-link" disabled>
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="content">
+                        <p>
+                            This website is licensed under a <a rel="license"
+                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+                                Commons Attribution-ShareAlike 4.0 International License</a>.
+                        </p>
+                        <p>
+                            This means you are free to borrow the <a
+                                href="https://github.com/nerfies/nerfies.github.io">source code</a> of this website,
+                            we just ask that you link back to this page in the footer.
+                            Please remember to remove the analytics code included in the header of the website which
+                            you do not want on your website.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
