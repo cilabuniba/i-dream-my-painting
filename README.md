@@ -1,6 +1,10 @@
 # I Dream My Painting: Connecting MLLMs and Diffusion Models via Prompt Generation for Text-Guided Multi-Mask Inpainting (WACV 2025)
 
-This repository contains the reference code for the paper "I Dream My Painting: Connecting MLLMs and Diffusion Models via Prompt Generation for Text-Guided Multi-Mask Inpainting".
+This repository contains the reference code for the paper ["I Dream My Painting: Connecting MLLMs and Diffusion Models via Prompt Generation for Text-Guided Multi-Mask Inpainting"](https://arxiv.org/abs/2411.19050).
+
+<a target="_blank" href="https://colab.research.google.com/github/https://colab.research.google.com/github/cilabuniba/i-dream-my-painting/blob/main/i_dream_my_painting_demo.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
 
 <img src="assets/task.gif" width="100%">
 
@@ -17,6 +21,7 @@ This repository contains the reference code for the paper "I Dream My Painting: 
         * [Logging](#logging)
     * [Prompt Generation](#prompt-generation)
     * [Multi-Mask Inpainting](#multi-mask-inpainting)
+* [Citation](#citation)
 
 ## Installation
 
@@ -335,3 +340,16 @@ And we provide the commands to reproduce them:
      ```bash
      python -m inpainting.models.text_to_image.test compute --config-path models/configs/text_to_image/test/sd_2_inp_rca_finetuned_gen.yaml
      ```
+     
+## Citation
+
+If you make use of our work, please cite our paper:
+
+```bibtex
+@inproceedings{fanelli2025idream,
+  title     = {I Dream My Painting: Connecting MLLMs and Diffusion Models via Prompt Generation for Text-Guided Multi-Mask Inpainting},
+  author    = {Nicola, Fanelli and Gennaro, Vessio and Giovanna, Castellano},
+  year      = {2025},
+  booktitle   = {Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision}
+}
+```
