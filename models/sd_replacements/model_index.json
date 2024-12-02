@@ -1,0 +1,34 @@
+{
+    "_class_name": "StableDiffusionInpaintPipeline",
+    "_diffusers_version": "0.8.0",
+    "feature_extractor": [
+      "transformers",
+      "CLIPImageProcessor"
+    ],
+    "requires_safety_checker": false,
+    "safety_checker": [
+      null,
+      null
+    ],
+    "scheduler": [
+      "diffusers",
+      "PNDMScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "CLIPTextModel"
+    ],
+    "tokenizer": [
+      "transformers",
+      "CLIPTokenizer"
+    ],
+    "unet": [
+      "inpainting.models.text_to_image.unets.unet_2d_condition",
+      "UNet2DConditionModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKL"
+    ]
+  }
+  
