@@ -36,6 +36,8 @@ class InpaintingDataset(Dataset):
         drop_caption_probability: float = 0.0,
         override_fn=None,
         texts_dir=None,
+        max_words=None,
+        global_anns_path=None,
         split: str = "train",
     ):
         """Dataset for text-to-image inpainting.
@@ -57,6 +59,8 @@ class InpaintingDataset(Dataset):
             drop_caption_probability (float, optional): Drop single-mask examples conditioning for CFG. Defaults to 0.0.
             override_fn (_type_, optional): Override the example (unused). Defaults to None.
             texts_dir (_type_, optional): Specify a directory from which reading the prompts (for generated prompts). Defaults to None.
+            max_words (_type_, optional): Maximum number of words in the prompt. Defaults to None.
+            global_anns_path (_type_, optional): Path to the global annotations
             split (str, optional): Specify the split. Defaults to "train".
         """
         self.data_dir = Path(data_dir)
@@ -69,6 +73,8 @@ class InpaintingDataset(Dataset):
         self.drop_caption_probability = drop_caption_probability
         self.override_fn = override_fn
         self.texts_dir = texts_dir
+        self.max_words = max_words
+        self.global_anns_path = Path(global_anns_path) if global_anns_path is not None else None
         self.split = split
 
         assert self.data_dir.exists(), f"Data directory not found: {self.data_dir}"
@@ -96,6 +102,11 @@ class InpaintingDataset(Dataset):
             if (self.entities_dir / img_path.stem / "annotations.json").exists()
         ]
         self.image_stems = [img.stem for img in self.image_paths]
+
+        # read the global annotations
+        if self.global_anns_path is not None:
+            with open(self.global_anns_path, "r") as f:
+                self.global_anns = json.load(f)
 
         # Define transforms
         self.transforms = transforms.Compose(
@@ -166,8 +177,11 @@ class InpaintingDataset(Dataset):
 
         # keep only max_concepts
         image_anns = list(image_anns.items())
-        if self.max_concepts is not None:
+        if self.max_concepts is not None and self.max_concepts > 1:
             image_anns = image_anns[: self.max_concepts]
+        elif self.max_concepts == 1:
+            # sample a single concept
+            image_anns = [random.choice(image_anns)]
         image_anns = dict(image_anns)
 
         # shuffle concepts
@@ -234,6 +248,18 @@ class InpaintingDataset(Dataset):
 
         # Get the prompt
         texts = [image_anns[ann]["caption"] for ann in image_anns]
+
+        # If self.max_words is not None, we truncate the texts
+        def truncate_texts(texts):
+            for i, text in enumerate(texts):
+                words = text.split(" ")
+                if len(words) > self.max_words:
+                    texts[i] = " ".join(words[: self.max_words])
+            return texts
+        if self.max_words is not None:
+            texts = truncate_texts(texts)
+            gt_texts = truncate_texts(gt_texts)
+
         if len(texts) == 1 and self.drop_caption_probability > 0:
             # If there is only one text, we drop it with a certain probability (use torch), and replace with ""
             if torch.rand(1).item() < self.drop_caption_probability:
@@ -290,6 +316,10 @@ class InpaintingDataset(Dataset):
         example["input_ids"] = final_input_ids
         example["gt_texts"] = gt_texts
         example["texts"] = texts
+
+        # Read the general caption (if available)
+        if self.global_anns_path is not None:
+            example["global_text"] = self.global_anns[image_path.name]["description"].split("Answer: ")[1].strip()
 
         # Create the freestyle mask
         if self.freestyle:
@@ -354,6 +384,9 @@ class InpaintingDataset(Dataset):
         collated["gt_texts"] = gt_texts
         texts = [example["texts"] for example in batch]
         collated["texts"] = texts
+        if "global_text" in batch[0]:
+            global_texts = [example["global_text"] for example in batch]
+            collated["global_texts"] = global_texts
         if "freestyle_layout_mask" in batch[0]:
             freestyle_layout_mask = (
                 torch.stack([example["freestyle_layout_mask"] for example in batch])
