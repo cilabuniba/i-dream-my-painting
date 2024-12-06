@@ -41,8 +41,75 @@ def cli():
 
 
 @cli.command()
+@click.option("--output-dir", type=click.Path(), required=True)
+@click.option("--num-proc", type=int, required=True)
+@click.option("--proc-idx", type=int, required=True)
+def generate_repeated(output_dir, num_proc, proc_idx):
+    torch.manual_seed(42)
+    torch.cuda.manual_seed(42)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    pipe = StableDiffusionInpaintPipeline.from_pretrained(
+        "models/stable-diffusion-2-inpainting",
+        torch_dtype=torch.float16,
+    )
+    pipe.load_lora_weights("models/sd/repeated/checkpoint-2884")
+    pipe.to(device)
+
+    dataset = InpaintingDataset(
+        data_dir=Path(os.getcwd()) / "data" / "mm_inp_dataset",
+        tokenizer=pipe.tokenizer,
+        max_concepts=5,
+        generator=torch.Generator().manual_seed(42),
+        shuffle_concepts=True,
+        masked_area_threshold=0.65,
+        resolution=512,
+        freestyle=True,
+        drop_caption_probability=0.0,
+        texts_dir=None,
+        # max_words=10,
+        # global_anns_path=Path(os.getcwd()) / "data" / "annotations.json",
+        split="test",
+    )
+    dataloader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=8,
+        shuffle=False,
+        num_workers=8,
+        collate_fn=dataset.collate_fn,
+        worker_init_fn=lambda worker_id: dataset.generator.manual_seed(
+            42 + worker_id
+        ),
+    )
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    for k, batch in enumerate(tqdm(dataloader)):
+        if k % num_proc != proc_idx:
+            continue
+        for i, pixel_values in enumerate(batch["pixel_values"]):
+            pixel_values = pixel_values
+            image = pixel_values
+            for j, mask in enumerate(batch["all_masks"][i]):
+                if isinstance(image, torch.Tensor):
+                    mask = mask.to(device)
+                    image = image.to(device)
+                else:
+                    # transform binary mask to PIL image
+                    mask = to_pil_image(mask, mode="L")
+                try:
+                    image = pipe(prompt=batch["gt_texts"][i][j], image=image, mask_image=mask).images[0]
+                except Exception as e:
+                    print(batch["gt_texts"][i][j], image, mask)
+            image_stem = batch["image_stems"][i]
+            image.save(os.path.join(output_dir, f"{image_stem}.png"))
+
+
+@cli.command()
 @click.option("--config-path", type=click.Path(exists=True), required=True)
-def generate(config_path):
+@click.option("--num-proc", type=int, required=True)        
+@click.option("--proc-idx", type=int, required=True)
+def generate(config_path, num_proc, proc_idx):
     with open(config_path, "r") as f:
         config_dict = yaml.safe_load(f)
     config = instantiate(config_dict)
@@ -79,6 +146,8 @@ def generate(config_path):
     os.makedirs(config.output_dir, exist_ok=True)
 
     for i, batch in enumerate(tqdm(dataloader)):
+        if i % num_proc != proc_idx:
+            continue        
         inputs = {}
         inputs["image"] = batch["pixel_values"].to(device)
         inputs["mask_image"] = batch["masks"].to(device)
@@ -273,6 +342,11 @@ def compute(config_path, only_multi_prompt):
         vision_model=clip_vision_model,
         processor=clip_processor,
     ).to(device)
+    clip_score_text2image_global = CLIPScoreText2Image(
+        text_model=clip_text_model,
+        vision_model=clip_vision_model,
+        processor=clip_processor,
+    ).to(device)
     n_masks_psnr_scores = [
         PeakSignalNoiseRatio(data_range=(0, 1)).to(device) for _ in range(5)
     ]
@@ -339,6 +413,11 @@ def compute(config_path, only_multi_prompt):
         fid.update(pred_pixel_values_01, real=False)
         clip_iqa.update(pred_pixel_values_01)
 
+        if "global_texts" in batch:
+            global_texts = batch["global_texts"]
+            pred_pils = [to_pil_image(p) for p in pred_pixel_values_01]
+            clip_score_text2image_global.update(global_texts, pred_pils)
+
         # compute per-image/per-mask clip scores
         for j, example_masks in enumerate(all_masks):
             example_clip_preds = []
@@ -377,6 +456,7 @@ def compute(config_path, only_multi_prompt):
         "lpips": lpips.compute().item(),
         "fid": fid.compute().item(),
         "clip_iqa": clip_iqa.compute().mean().item(),
+        "clip_score_text2image_global": clip_score_text2image_global.compute().item(),
         "clip_score_text2image": clip_score_text2image.compute().item(),
         "clip_score_image2image": clip_score_image2image.compute().item(),
     }
