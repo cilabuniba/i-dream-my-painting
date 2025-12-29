@@ -23,6 +23,16 @@ This repository contains the reference code for the paper ["I Dream My Painting:
     * [Multi-Mask Inpainting](#multi-mask-inpainting)
 * [Citation](#citation)
 
+> [!WARNING]
+> **Stable Diffusion 2.1 checkpoint availability**  
+>  
+> As of today, the official **Stable Diffusion 2.1** model released by *stabilityai* is no longer available on Hugging Face.  
+>  
+> As a replacement, the following [community-maintained checkpoint](https://huggingface.co/sd2-community/stable-diffusion-2-1) can be used. 
+>  
+> This checkpoint has **not been explicitly tested** within the scope of this repository or the experiments reported in the paper. While it is intended to be equivalent to the original Stable Diffusion 2.1 release, minor differences in behavior or results may occur.
+
+
 ## Installation
 
 Prerequisites: CUDA>=12.1, Conda for environment management, Git LFS  for downloading Stable Diffusion 2 Inpainting.
@@ -57,6 +67,11 @@ unzip annotations.zip
 This will create the `annotations.json` file with the global image annotations and the `llava.json` file with the object-level annotations. The object-level annotations can be used **only after** the [Make the Dataset](#make-the-dataset) step.
 
 ### Download the Images
+
+> [!TIP]
+> You can download a ZIP archive containing the images from Google Drive at [this link](https://drive.google.com/file/d/1N6ZGgTbJ5MuXmD3vml5yzZZ-yTRZd5kG/view?usp=drive_link).
+>
+> After downloading, extract the archive and place the image files in the directory `data/mm_inp_dataset/images`.
 
 To download the images at our thumbnail sizes using the WikiArt API, you can use the following command:
 
