@@ -361,10 +361,12 @@ And we provide the commands to reproduce them:
 If you make use of our work, please cite our paper:
 
 ```bibtex
-@inproceedings{fanelli2025idream,
-  title     = {I Dream My Painting: Connecting MLLMs and Diffusion Models via Prompt Generation for Text-Guided Multi-Mask Inpainting},
-  author    = {Nicola, Fanelli and Gennaro, Vessio and Giovanna, Castellano},
-  year      = {2025},
-  booktitle   = {Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision}
+@inproceedings{fanelli2025dream,
+  title={I Dream My Painting: Connecting MLLMs and Diffusion Models via Prompt Generation for Text-Guided Multi-Mask Inpainting},
+  author={Fanelli, Nicola and Vessio, Gennaro and Castellano, Giovanna},
+  booktitle={2025 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  pages={6073--6082},
+  year={2025},
+  organization={IEEE}
 }
 ```
